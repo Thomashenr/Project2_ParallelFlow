@@ -1,4 +1,3 @@
-package git;
 import java.awt.Dimension;
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -41,6 +40,8 @@ public class UDP_Server extends JFrame {
 	 public String msg="1";
 
    public UDP_Server(){ 
+	   
+	   //Creating windows for each sensor as well as the main hub
       super("Message Server");
       super.add(new JScrollPane(msgArea));
       super.setSize(new Dimension(450, 350));
@@ -49,7 +50,8 @@ public class UDP_Server extends JFrame {
       super.setVisible(true);
       msgArea.setEditable(false);
       
-	  s1.add(m1);
+	  //s1.add(m1);
+	  s1.add(new JScrollPane(m1));
 	  s1.setSize(new Dimension(450, 350));
 	  s1.setBounds(100,500, 450, 350);
       s1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -57,6 +59,7 @@ public class UDP_Server extends JFrame {
       m1.setEditable(false);
       s2.add(m2);
       
+	  s2.add(new JScrollPane(m2));
 	  s2.setSize(new Dimension(450, 350));
 	  s2.setBounds(550, 500, 450, 350);
       s2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -64,6 +67,7 @@ public class UDP_Server extends JFrame {
       m2.setEditable(false);
       s3.add(m3);
       
+	  s3.add(new JScrollPane(m3));
 	  s3.setSize(new Dimension(450, 350));
 	  s3.setBounds(1000, 500, 450, 350);
       s3.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -81,95 +85,106 @@ public class UDP_Server extends JFrame {
    public void readyToReceivPacket() throws InterruptedException {
       while (true) {
          try {
+			 //try to receive packet
             byte buffer[] = new byte[128];
             DatagramPacket packet =
                new DatagramPacket(buffer, buffer.length);
             socket.receive(packet);
             String r_p_client=new String(packet.getData());
-            showMsg("\n\nHost: " + packet.getAddress()
-                    + "\nPort: " + packet.getPort()
-                    + "\nLength: " + packet.getLength()
-                    + "\nData: "
-                    + r_p_client);
+            showMsg("\n\nData:" + r_p_client);
             
+            //for data corruption
           if(packet.getLength()!=Integer.parseInt(r_p_client.substring(0, 3)))
       	  {
       		  msg="0";
-      	//	showMsg("+++++++++++");
       	  }
           else
           {
         	  msg="1";
-        	  if(r_p_client.contains("T"))
-        	  {
-        		  int y=r_p_client.indexOf("T");
-        		  String level = r_p_client.substring(y);
-        		  m1.append(" "+level);  
-        	  }
-        	  else if(r_p_client.contains("H"))
-        	  {
-        		  int y=r_p_client.indexOf("H");
-        		  String heartrate = r_p_client.substring(y);
-        		  m2.append(" "+heartrate);
-        	  }
-        	  else
-        	  {
-        		  int y=r_p_client.indexOf("L");
-        		  int z=r_p_client.indexOf("N");
-        		  String latitude = r_p_client.substring(y, z);
-            	  String longitude = r_p_client.substring(z);
-        		  m3.append("  "+latitude + " " + longitude);
-        	  }
-        	  
-        /*	  int y=r_p_client.indexOf("T");
-        	  int z=r_p_client.indexOf("H");
-        	  String level = r_p_client.substring(y, z);
-        	  y=r_p_client.indexOf("H");
-        	  z=r_p_client.indexOf("L");
-        	  String heartrate = r_p_client.substring(y, z);
-        	  y=r_p_client.indexOf("L");
-        	  z=r_p_client.indexOf("N");
-        	  String latitude = r_p_client.substring(y, z);
-        	  String longitude = r_p_client.substring(z);
-        	  
-        	  m1.append(level);
-        	  m2.append(heartrate);
-        	  m3.append(latitude + " " + longitude);*/
-        	 // showMsg("----------------"+r_p_client.substring(0, 2));
-        	 //Check which sensor packet it is
-        	  //if(r_p_client.substring(0, 2).equals("00"))
-        	  //{
-        		  //if(r_p_client.contains("$"))
-        		  //{
-        		  //int z=r_p_client.indexOf("$");
-        		  //r_p_client =r_p_client.substring(0, z);
-        		  //}
+        	 //Checks for sending the information to the proper screen
+        	int i=r_p_client.indexOf("P");
+        	int j = 0;
+        	if(r_p_client.contains("T")) {
+        		  j=r_p_client.indexOf("T");
+			  }
+			 else if (r_p_client.contains("H")) {
+				j=r_p_client.indexOf("H");
+			  }
+			  else if (r_p_client.contains("L")) {					//contains all three
+				j=r_p_client.indexOf("L");
+			  }
+			  String packetNum = r_p_client.substring(i,j);
+			  showMsg("\nPacket Number: " + packetNum );
+			  
+        	  if(r_p_client.contains("T")) {
+        		  int t=r_p_client.indexOf("T");
         		  
-        	      //m1.append(r_p_client);
-        		////  showMsg("+++++++++++------------"+r_p_client);
-        	  //}
-        	  //else if(r_p_client.substring(0, 2).equals("01"))
-        	  //{
-        		  //if(r_p_client.contains("$"))
-        		  //{
-        		  //int z=r_p_client.indexOf("$");
-        		  //r_p_client =r_p_client.substring(0, z);
-        		  //}
-        		  //m2.append(r_p_client);
-        		////  showMsg("+++++++++++------------"+r_p_client);
-        	  //}
-        	  //else
-        	  //{
-        		  //if(r_p_client.contains("$"))
-        		  //{
-        		  //int z=r_p_client.indexOf("$");
-        		  //r_p_client =r_p_client.substring(0, z);
-        		  //}
-        		  //m3.append(r_p_client);
-        		////  showMsg("+++++++++++------------"+r_p_client);
-        	  //}
+        		  if (r_p_client.contains("H")) {
+					int h=r_p_client.indexOf("H");
+					
+					if (r_p_client.contains("L")) {					//contains all three
+						int l=r_p_client.indexOf("L");
+						int n=r_p_client.indexOf("N");
+						
+						String tank = r_p_client.substring(t, h);
+						m1.append("\n"+tank);
+						
+						String heartrate = r_p_client.substring(h, l);
+						m2.append("\n"+heartrate);
+						
+						String latitude = r_p_client.substring(l, n);
+						String longitude = r_p_client.substring(n);
+						m3.append("\n"+latitude + " " + longitude);
+					} else { 											//contains only T and H
+						String tank = r_p_client.substring(t, h);
+						m1.append("\n"+tank);
+						
+						String heartrate = r_p_client.substring(h);
+						m2.append("\n"+heartrate);
+					}  
+				  } else if (r_p_client.contains("L")) { 				//contains T and L/R
+						int l=r_p_client.indexOf("L");
+						int n=r_p_client.indexOf("N");
+						
+						String tank = r_p_client.substring(t, l);
+						m1.append("\n"+tank);
+						
+						String latitude = r_p_client.substring(l, n);
+						String longitude = r_p_client.substring(n);
+						m3.append("\n"+latitude + " " + longitude);
+				  } else {											//contains ONLY T
+						String tank = r_p_client.substring(t);
+						m1.append("\n"+tank);
+				  }
+        	  } else if (r_p_client.contains("H")) {
+				int h=r_p_client.indexOf("H");
+				
+				if (r_p_client.contains("L")) {						//contains H and L/R
+					int l=r_p_client.indexOf("L");
+					int n=r_p_client.indexOf("N");
+											
+					String heartrate = r_p_client.substring(h, l);
+					m2.append("\n"+heartrate);
+					
+					String latitude = r_p_client.substring(l, n);
+					String longitude = r_p_client.substring(n);
+					m3.append("\n"+latitude + " " + longitude);
+				} else { 												//contains only H
+											
+					String heartrate = r_p_client.substring(h);
+					m2.append("\n"+heartrate);
+				}  
+			  } else if (r_p_client.contains("L")) {						//contains ONLY L/R
+					int l=r_p_client.indexOf("L");
+					int n=r_p_client.indexOf("N");
+					
+					String latitude = r_p_client.substring(l, n);
+					String longitude = r_p_client.substring(n);
+					m3.append("\n"+latitude + " " + longitude);
+				}
+        	  
+			
           }
-          //  TimeUnit.SECONDS.sleep(5);
             sendPacket(packet);
          } catch (IOException ex) {
             showMsg(ex.getMessage());
@@ -178,24 +193,22 @@ public class UDP_Server extends JFrame {
    }
 
    public void sendPacket(DatagramPacket packetReceived) {
-      showMsg("\nEcho to client...");
       try {
-    	  
     	  
           byte buff[]=msg.getBytes();
           DatagramPacket packet =
             new DatagramPacket(buff, buff.length,
             packetReceived.getAddress(),
             packetReceived.getPort());
-        
          socket.send(packet);
-         showMsg("\nMessage sent :"+msg);
       } catch (IOException ex) {
 
       }
    }
 
+	//printing message to hub 
    public void showMsg(final String msg) {
+	   System.out.println(msg);
       SwingUtilities.invokeLater(new Runnable()
       {
 		  public void run() {

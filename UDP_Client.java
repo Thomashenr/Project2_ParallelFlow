@@ -35,8 +35,23 @@ public class UDP_Client1 extends JFrame{
 	   public static int ip3 = 0;
 	   public static int ip4 = 0;
 	   public static int g = 0;
+
+	   private static DatagramSocket socketHR;
+	   private static DatagramSocket socketLoc;
+	   private static DatagramSocket socketAir;
+	   private static DatagramSocket socketToxic;	
 	   
 	 public static void main(String[] args) throws InterruptedException, IOException {
+
+	     Thread hr = new Thread(new SensorHR());
+	     hr.start();
+	     Thread loc = new Thread(new SensorLoc());
+	     loc.start();
+	     Thread air = new Thread(new SensorAir());
+	     air.start();
+	     Thread toxic = new Thread(new SensorToxic());
+	     toxic.start();
+
 		   UDP_Client1 client=new UDP_Client1();
 		   Scanner s = new Scanner(System.in);
 		   System.out.println("Enter IP with numbers separated by 'Enter' : ");
@@ -232,6 +247,123 @@ public class UDP_Client1 extends JFrame{
 	   else {
 		   return 00.00;
 	   }
+   }
+	
+   private static class SensorHR implements Runnable {
+       public void run() {
+	        System.out.println("Started HR Thread!");			 
+			byte buff1[]=new byte[128];
+			DatagramPacket packet = new DatagramPacket(buff1,buff1.length);			
+	        try {
+	 		   socketHR = new DatagramSocket(10160);
+	 		   System.out.println("Created Sensor Sockets...");
+	
+		      } catch (SocketException ex) {
+		   	     System.out.println("Creating Socket FAILED...");
+		         System.exit(1);
+		      }
+	
+       	while(true) {
+       		try {
+					socketHR.receive(packet);
+       		}
+               catch(IOException ex){
+      				 System.out.println(ex.getMessage());
+      			 }
+				System.out.println("Recieved HR");
+				
+				String r_p_server=new String(packet.getData());
+				packet = new DatagramPacket(buff1,buff1.length);
+//				System.out.println("HR: " + r_p_server);     		
+       	}
+       }
+   }	
+   private static class SensorLoc implements Runnable {
+       public void run() {
+	        System.out.println("Started Loc Thread!");			 
+			byte buff1[]=new byte[128];
+			DatagramPacket packet = new DatagramPacket(buff1,buff1.length);			
+	        try {
+	 		   socketLoc = new DatagramSocket(10161);
+	 		   System.out.println("Created Sensor Sockets...");
+	
+		      } catch (SocketException ex) {
+		   	     System.out.println("Creating Socket FAILED...");
+		         System.exit(1);
+		      }
+	
+       	while(true) {
+       		try {
+					socketLoc.receive(packet);
+       		}
+               catch(IOException ex){
+      				 System.out.println(ex.getMessage());
+      			 }
+				System.out.println("Recieved Loc");
+				
+				String r_p_server=new String(packet.getData());
+				packet = new DatagramPacket(buff1,buff1.length);
+//				System.out.println("Loc: " + r_p_server);     		
+       	}
+       }
+   }	
+   private static class SensorAir implements Runnable {
+       public void run() {
+	        System.out.println("Started Air Thread!");			 
+			byte buff1[]=new byte[128];
+			DatagramPacket packet = new DatagramPacket(buff1,buff1.length);			
+	        try {
+	 		   socketAir = new DatagramSocket(10162);
+	 		   System.out.println("Created Sensor Sockets...");
+	
+		      } catch (SocketException ex) {
+		   	     System.out.println("Creating Socket FAILED...");
+		         System.exit(1);
+		      }
+	
+       	while(true) {
+       		try {
+					socketAir.receive(packet);
+       		}
+               catch(IOException ex){
+      				 System.out.println(ex.getMessage());
+      			 }
+				System.out.println("Recieved Air");
+				
+				String r_p_server=new String(packet.getData());
+				packet = new DatagramPacket(buff1,buff1.length);
+//				System.out.println("Air: " + r_p_server);     		
+       	}
+       }
+   }	
+   private static class SensorToxic implements Runnable {
+       public void run() {
+	        System.out.println("Started Toxic Thread!");			 
+			byte buff1[]=new byte[128];
+			DatagramPacket packet = new DatagramPacket(buff1,buff1.length);			
+	        try {
+	 		   socketToxic = new DatagramSocket(10163);
+	 		   System.out.println("Created Sensor Sockets...");
+	
+		      } catch (SocketException ex) {
+		   	     System.out.println("Creating Socket FAILED...");
+		         System.exit(1);
+		      }
+	
+       	while(true) {
+       		try {
+					socketToxic.receive(packet);
+       		}
+               catch(IOException ex){
+      				 System.out.println(ex.getMessage());
+      			 }
+				System.out.println("Recieved Toxic");
+				
+				String r_p_server=new String(packet.getData());
+				packet = new DatagramPacket(buff1,buff1.length);
+//				System.out.println("Toxic: " + r_p_server);     		
+       	}
+       }
    }
 
  

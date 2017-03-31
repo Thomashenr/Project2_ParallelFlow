@@ -52,7 +52,7 @@ public class Node {
       Node allNodes[] = new Node[10];
       String link;
       Node current;
-      if (args.length < 0) {
+      if (args.length == 0) {
          System.out.println("Missing argument: Configuration File needed.");
       }
       else {

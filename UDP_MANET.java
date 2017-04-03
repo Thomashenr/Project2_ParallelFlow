@@ -207,7 +207,7 @@ public class UDP_MANET extends Node {
 					{
 						System.out.println("!PN");
 						
-						r_p_server=r_p_server+"PN"+(noden-1);
+						r_p_server = r_p_server.trim() + "PN"+(noden-1);
 						previous_node = r_p_server.substring(r_p_server.indexOf("PN")+2);
 
 					}
@@ -218,7 +218,7 @@ public class UDP_MANET extends Node {
 						previous_node = r_p_server.substring(r_p_server.indexOf("PN")+2);
 						System.out.println("Previous Node: " + previous_node);
 						r_p_server = r_p_server.substring(0, r_p_server.indexOf("PN"));
-						r_p_server=r_p_server+"PN"+(noden-1);
+						r_p_server = r_p_server.trim() +"PN"+(noden-1);
 
 					}
 

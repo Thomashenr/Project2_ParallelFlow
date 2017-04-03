@@ -170,7 +170,7 @@ public class UDP_MANET extends Node {
 
 
 	public static void main(String[] args) throws InterruptedException, IOException {
-		if (args.length < 0) {
+		if (args.length == 0) {
 			System.out.println("Missing argument: Configuration File needed.");
 		}
 		fileName = args[0];

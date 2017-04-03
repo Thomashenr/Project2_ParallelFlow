@@ -80,10 +80,12 @@ public class UDP_Server extends JFrame {
 		s4.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		s4.setVisible(true);
 		m4.setEditable(false);
+		
+		int packetNumber = 0;
 
 		try {
 			//socket # here should be the port# of the last node in configuration file
-			socket = new DatagramSocket(10166);
+			socket = new DatagramSocket(10169);
 		} catch (SocketException ex) {
 			System.out.println("failed to setup socket!");
 			System.exit(1);
@@ -129,8 +131,10 @@ public class UDP_Server extends JFrame {
 						packetNum = r_p_client.substring((i + 1), j);
 					}
 					showMsg("Packet Number: " + packetNum);
+					packetNumber = Integer.parseInt(packetNum);
 				}
 				sendPacket(packet);
+				
 			} catch (IOException ex) {
 				showMsg(ex.getMessage());
 			}
@@ -139,9 +143,11 @@ public class UDP_Server extends JFrame {
 
 	public void sendPacket(DatagramPacket packetReceived) {
 		try {
+			packetNumber++;
+			msg = "P" + packetNumber + "DR1SR12PN12";
 			System.out.println("Message: " + msg);
 			byte buff[] = msg.getBytes();
-			DatagramPacket packet = new DatagramPacket(buff, buff.length, packetReceived.getAddress(), 10164);
+			DatagramPacket packet = new DatagramPacket(buff, buff.length, packetReceived.getAddress(), packetReceived.getPort());
 			socket.send(packet);
 		} catch (IOException ex) {
 			System.out.println("Error Sending Packet!");

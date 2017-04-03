@@ -33,7 +33,7 @@ class Node extends JFrame {
    private Node nodesConnected[];
 
 
-   public Node(String nodeIn) {
+   public Node(String nodeIn) { //Constructor for nodes
       name = nodeIn;
       attachedNodes = new int[12];
       distances = new int[12];
@@ -59,23 +59,23 @@ class Node extends JFrame {
       return attachedNodes[index];
    }
 
-   public long checkFileModification() {
+   public long checkFileModification() { //Checks to see if file has been modified before sending
       return file.lastModified();
    }
 
-   public void linkNodes(String configFile) { 
+   public void linkNodes(String configFile) {  //Links nodes appropriately
       allNodes = new Node[12];
       String link;
       Node current;
-      file = new File(configFile);
+      file = new File(configFile); // Instance of file
       String line;
       BufferedReader buffer = null;
       try {
          buffer = new BufferedReader(new FileReader(file));
          int added = 0;
-         int i = 0;
-         while ((line = buffer.readLine()) != null) {
-            Node currentNode = new Node("");
+         int i = 0; 
+         while ((line = buffer.readLine()) != null) { // Iterates through file line by line
+            Node currentNode = new Node(""); // Instance of Node class
             int index = line.indexOf(" ");
             currentNode.setNodeName(line.substring(0, index));
             line = line.replace(currentNode.getNodeName() + " ", "");
@@ -88,7 +88,7 @@ class Node extends JFrame {
             index = line.indexOf("links ");
             currentNode.location = line.substring(0, index);
             line = line.replace(currentNode.location + "links ", "");  
-            for(int x = 0; x <= 12; x++) {
+            for(int x = 0; x <= 12; x++) { // loop to attach links
                if((index = line.indexOf(" ")) > 0) {
                   String linkNode =  line.substring(0, index);
                   line = line.replace(linkNode + " ", "");
@@ -102,7 +102,7 @@ class Node extends JFrame {
                   line = line.replace(line, "");
                }
             }
-            index = currentNode.location.indexOf(" ");
+            index = currentNode.location.indexOf(" "); // Gets the location and seperates them via x and y
             currentNode.x = Integer.parseInt(currentNode.location.substring(0, index));
             currentNode.location = currentNode.location.replace(currentNode.location.substring(0, index + 1), "");
             index = currentNode.location.indexOf(" ");
@@ -125,7 +125,7 @@ class Node extends JFrame {
       catch (IOException e) {
          e.printStackTrace();
       }
-      for (int b = 0; b < 12; b++) {
+      for (int b = 0; b < 12; b++) { //Calculates the distance between Nodes
          if(allNodes[b] != null) {
             for(int q = 0; q < 4; q++) {
                allNodes[b].distances[q] = ((int)Math.sqrt((Math.pow(Math.abs(allNodes[b].x - allNodes[q].x), 2) + Math.pow(Math.abs(allNodes[b].y - allNodes[q].y), 2))));   
@@ -150,7 +150,7 @@ class Node extends JFrame {
       }
    
    }
-   public boolean gremlinFunctionManet(int distance) {
+   public boolean gremlinFunctionManet(int distance) { //PacketRateDrop function
       Random randSend = new Random();
       int gremlin = randSend.nextInt(100) + 1;
       double results = 100 - (distance / 5);

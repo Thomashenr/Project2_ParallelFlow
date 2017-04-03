@@ -167,34 +167,39 @@ public class UDP_MANET extends Node {
 					node.linkNodes(fileName);
 				}
 
-				byte buff1[]=new byte[128];
-				DatagramPacket packet=
-						new DatagramPacket(buff1,buff1.length);
+				byte buff1[] = new byte[128];
+				DatagramPacket packet = new DatagramPacket(buff1,buff1.length);
 
 				socket.receive(packet);
-				String r_p_server=new String(packet.getData());
+				String r_p_server = new String(packet.getData());
 				System.out.println("Data: " + r_p_server);
 
 				int i1=r_p_server.indexOf("P");
 				int j1 = 0;
-				if(r_p_server.contains("T")) 
-				{
-					j1=r_p_server.indexOf("T");
-				}
-				else if (r_p_server.contains("H")) 
+				if(r_p_server.contains("H")) 
 				{
 					j1=r_p_server.indexOf("H");
+				}
+				else if (r_p_server.contains("T")) 
+				{
+					j1=r_p_server.indexOf("T");
 				}
 				else if (r_p_server.contains("L")) 
 				{					
 					j1=r_p_server.indexOf("L");
 				}
-				String packetNum = r_p_server.substring(i1+1,j1);
+				else if (r_p_server.contains("X")) 
+				{					
+					j1=r_p_server.indexOf("X");
+				}
+				String packetNum = r_p_server.substring((i1 + 1),j1);
 				System.out.println("Packet Number: " + packetNum );
 
 				String previous_node="";
 
-				if(Integer.parseInt(packetNum)>Integer.parseInt(cache_table[0][1]))
+				int test = Integer.parseInt(packetNum);
+				int test2 = Integer.parseInt(cache_table[0][1]);
+				if(Integer.parseInt(packetNum) > Integer.parseInt(cache_table[0][1]))
 				{
 					cache_table[0][1]=packetNum;
 					System.out.println("-----");
@@ -229,7 +234,7 @@ public class UDP_MANET extends Node {
 
 						if(Integer.parseInt(previous_node)!=an)
 						{
-							int an_port=Integer.parseInt(node.allNodes[an-1].portNumber);
+							int an_port = Integer.parseInt(node.allNodes[an-1].portNumber);
 							//Thread.sleep(1000); //pause for readability
 							System.out.println("r_p_server : "+r_p_server);
 							System.out.println("Forwarding from port :"+port+"to :"+an_port);
@@ -237,9 +242,7 @@ public class UDP_MANET extends Node {
 							//System.out.println("buffer length"+buff.length);
 							InetAddress addressT = InetAddress.getLocalHost();
 
-							DatagramPacket packetSend=
-									new DatagramPacket(buff, buff.length,
-											addressT, an_port);
+							DatagramPacket packetSend = new DatagramPacket(buff, buff.length, addressT, an_port);
 							socket.send(packetSend);
 						}
 					}

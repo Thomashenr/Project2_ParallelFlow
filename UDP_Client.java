@@ -89,6 +89,14 @@ public class UDP_Client extends JFrame {
 		System.out.println("Enter Gremlin Function Value (0-100) : ");
 		g2 = s.nextInt();
 		userInput.start();
+		
+		
+		try {
+			socket = new DatagramSocket(10164); //set to node1 port# value
+		} catch (SocketException ex) {
+			System.out.println("Failed to Create Socket!");
+			System.exit(1);
+		}
 
 		// for demo handling
 
@@ -142,11 +150,6 @@ public class UDP_Client extends JFrame {
 	public void sendPacket() throws InterruptedException {
 		// UDP_Client rpacket = new UDP_Client();
 		try {
-			socket = new DatagramSocket();
-		} catch (SocketException ex) {
-			System.exit(1);
-		}
-		try {
 			byte buff[] = msg.getBytes();
 			byte[] ipAddr = new byte[] { (byte) ip1, (byte) ip2, (byte) ip3, (byte) ip4 };
 			InetAddress addressT = InetAddress.getByAddress(ipAddr);
@@ -158,7 +161,7 @@ public class UDP_Client extends JFrame {
 			}
 			// if gremlin doesnt drop, then send it to the server
 			else {
-				DatagramPacket packetSend = new DatagramPacket(buff, buff.length, addressT, 10167);
+				DatagramPacket packetSend = new DatagramPacket(buff, buff.length, addressT, 10165);
 				socket.send(packetSend);
 			}
 		} catch (IOException ex) {

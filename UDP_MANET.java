@@ -287,8 +287,8 @@ public class UDP_MANET extends Node {
                      System.out.println("Forwarding from port :"+port+"to :"+an_port);
                      byte buff[]=r_p_server.getBytes();
                   	//System.out.println("buffer length"+buff.length);
-                     InetAddress addressT = InetAddress.getLocalHost();
-                  
+                   //  InetAddress addressT = InetAddress.getLocalHost();
+                     InetAddress addressT = InetAddress.getByName(node.allNodes[an-1].machine);
                      DatagramPacket packetSend = new DatagramPacket(buff, buff.length, addressT, an_port);
                      socket.send(packetSend);
                   }

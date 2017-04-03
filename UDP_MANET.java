@@ -14,6 +14,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import java.lang.*;
 
 class Node extends JFrame {
 	private String name;
@@ -21,18 +22,22 @@ class Node extends JFrame {
 	private String nodes;
 	private int attachedNodes[];
 	private Node currentNode;
-	private int numberNodes, value;
+	private int numberNodes, value, x, y;
 	private Node previousNode;
 	private String machine;
 	public String portNumber;
 	private String location;
 	public Node allNodes[];
 	private File file;
+	private int distances[];
+   	private Node nodesConnected[];
 
 
 	public Node(String nodeIn) {
 		name = nodeIn;
 		attachedNodes = new int[10];
+		distances = new int[10];
+     		nodesConnected = new Node[10];
 		for (int i = 0; i < 10; i++) {
 			attachNewNode(0, i);
 		}
@@ -97,8 +102,13 @@ class Node extends JFrame {
 						line = line.replace(line, "");
 					}
 				}
-				allNodes[i] = currentNode; 
-				i++;
+				   index = currentNode.location.indexOf(" ");
+				   currentNode.x = Integer.parseInt(currentNode.location.substring(0, index));
+				   currentNode.location = currentNode.location.replace(currentNode.location.substring(0, index + 1), "");
+				   index = currentNode.location.indexOf(" ");
+				   currentNode.y = Integer.parseInt(currentNode.location.substring(0, index));
+				   allNodes[i] = currentNode; 
+				   i++;
 			}
 			// for (int y = 0; y < 4; y++) {
 			// System.out.print(allNodes[y].getNodeName() + " ");
@@ -115,7 +125,29 @@ class Node extends JFrame {
 		catch (IOException e) {
 			e.printStackTrace();
 		}
-
+		for (int b = 0; b < 10; b++) {
+       		  if(allNodes[b] != null) {
+            		for(int q = 0; q < 4; q++) {
+              			allNodes[b].distances[q] = ((int)Math.sqrt((Math.pow(Math.abs(allNodes[b].x - allNodes[q].x), 2) + Math.pow(Math.abs(allNodes[b].y - allNodes[q].y), 2))));   
+              			 if(allNodes[b].distances[q] <= 100) {
+                 			 allNodes[b].nodesConnected[q] = allNodes[q];
+              			}
+               			else {
+                		  allNodes[b].nodesConnected[q] = null;
+               			}
+            		}
+         	 }
+     	       }
+      
+	      for(int y = 0; y < 10; y++) {
+		 for(int z = 0; z < 4; z++) {
+		    if (allNodes[y] != null) {
+		       if(allNodes[y].nodesConnected[z] != null) {
+			  System.out.println(allNodes[y].getNodeName() + " Connected to: " +  allNodes[y].nodesConnected[z].getNodeName() + " Distance: " + allNodes[y].distances[z]);
+		       }
+		    }
+		 }
+	      }
 
 	}
 }

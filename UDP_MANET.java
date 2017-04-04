@@ -24,7 +24,7 @@ class Node extends JFrame {
    private Node currentNode;
    private int numberNodes, value, x, y;
    private Node previousNode;
-   private String machine;
+   public String machine;
    public String portNumber;
    private String location;
    public Node allNodes[];
@@ -220,8 +220,9 @@ public class UDP_MANET extends Node {
             socket.receive(packet);
             String r_p_server = new String(packet.getData());
             System.out.println("Data: " + r_p_server);
-            String source_addr=r_p_server.substring(r_p_server.indexOf("SR")+2,r_p_server.indexOf("SR")+3);
-            String dest_addr=r_p_server.substring(r_p_server.indexOf("DR")+2,r_p_server.indexOf("DR")+4);
+            String source_addr=r_p_server.substring(r_p_server.indexOf("SR")+2,r_p_server.indexOf("SR")+3).trim();
+	    System.out.println("Source: " + source_addr);
+            String dest_addr=r_p_server.substring(r_p_server.indexOf("DR")+2,r_p_server.indexOf("DR")+4).trim();
          	
             int i1=r_p_server.indexOf("P");
             int j1 = 0;
@@ -246,7 +247,8 @@ public class UDP_MANET extends Node {
          	
             if(j1==0)
             {
-               packetNum = r_p_server.substring((i1 + 1));
+	       int index = r_p_server.indexOf("DR");
+               packetNum = r_p_server.substring(i1 + 1, index);
                System.out.println("Packet Number: " + packetNum );
             }
             else
@@ -264,7 +266,7 @@ public class UDP_MANET extends Node {
             {
                cache_table[0][1]=packetNum;
                System.out.println("-----");
-               previous_node = r_p_server.substring(r_p_server.indexOf("PN")+2);
+               previous_node = r_p_server.substring(r_p_server.indexOf("PN")+2).trim();
                System.out.println("Previous Node: " + previous_node);
                r_p_server = r_p_server.substring(0, r_p_server.indexOf("PN"));
                r_p_server = r_p_server.trim() +"PN"+(noden);
@@ -279,7 +281,7 @@ public class UDP_MANET extends Node {
                      break;
                   }
                
-                  if(Integer.parseInt(previous_node)!=an && Integer.parseInt(source_addr)!=noden)
+                  if(Integer.parseInt(previous_node)!=an && Integer.parseInt(source_addr)!=noden && Integer.parseInt(source_addr)!=an) 
                   {
                      int an_port = Integer.parseInt(node.allNodes[an-1].portNumber);
                   	//Thread.sleep(1000); //pause for readability
@@ -288,7 +290,8 @@ public class UDP_MANET extends Node {
                      byte buff[]=r_p_server.getBytes();
                   	//System.out.println("buffer length"+buff.length);
                    //  InetAddress addressT = InetAddress.getLocalHost();
-                     InetAddress addressT = InetAddress.getByName(node.allNodes[an-1].machine);
+                     InetAddress addressT = InetAddress.getByName(node.allNodes[an-1].machine + ".eng.auburn.edu");
+		     System.out.println(node.allNodes[an-1].machine);
                      DatagramPacket packetSend = new DatagramPacket(buff, buff.length, addressT, an_port);
                      socket.send(packetSend);
                   }

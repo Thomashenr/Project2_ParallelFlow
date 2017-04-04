@@ -11,6 +11,7 @@ import java.util.Scanner;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import java.lang.*;
 
 public class UDP_Client extends JFrame {
 	private static int bufferSize = 100;
@@ -135,7 +136,7 @@ public class UDP_Client extends JFrame {
 			}
 			if (newData) {
 				// saving old message in case we need to retransmit
-				msg += "DR12"  + "SR1" + "PN1";
+				msg = msg.trim() + "DR12"  + "SR1" + "PN1";
 				old_msg = msg;
 				// sending packet
 				if (g < 100) {
@@ -162,7 +163,7 @@ public class UDP_Client extends JFrame {
 			//InetAddress addressT = InetAddress.getByAddress(ipAddr);
 			
 			//HARD CODE to machine name of 2nd node
-			addressT = InetAddress.InetAddress.getByName("tux201.eng.auburn.edu");
+			InetAddress addressT = InetAddress.getByName("tux201.eng.auburn.edu");
 			
 			
 			
@@ -243,6 +244,10 @@ public class UDP_Client extends JFrame {
 												// lost
 					socket.receive(packet);
 					String r_p_server = new String(packet.getData());
+					 int i1=r_p_server.indexOf("P");
+					// int index = r_p_server.indexOf("DR");
+				      //   c = Integer.parseInt(r_p_server.substring(i1 + 1, index).trim());
+				        // System.out.println("Packet Number: " + c );
 					return r_p_server;
 				} catch (IOException ex) {
 					m1.insert("\n" + ex.getMessage(), 0);

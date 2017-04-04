@@ -38,9 +38,6 @@ public class UDP_Server extends JFrame {
 
 	private DatagramSocket socket;
 	public String msg = "1";
-	public int packetNumber = 0;
-	public int checkPacket = -1;
-
 
 	public UDP_Server() {
 
@@ -83,11 +80,10 @@ public class UDP_Server extends JFrame {
 		s4.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		s4.setVisible(true);
 		m4.setEditable(false);
-		
-		
+
 		try {
 			//socket # here should be the port# of the last node in configuration file
-			socket = new DatagramSocket(10169);
+			socket = new DatagramSocket(10166);
 		} catch (SocketException ex) {
 			System.out.println("failed to setup socket!");
 			System.exit(1);
@@ -95,45 +91,14 @@ public class UDP_Server extends JFrame {
 	}
 
 	public void readyToReceivPacket() throws InterruptedException {
-		boolean check = true;
-		while (check) {
+		while (true) {
 			try {
 				// try to receive packet
 				byte buffer[] = new byte[128];
 				DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 				socket.receive(packet);
-				
 				String r_p_client = new String(packet.getData());
 				showMsg("\n\nData:" + r_p_client);
-				int i1 = r_p_client.indexOf("P");
-				int j1 = 0;
-					if (r_p_client.contains("H")) {
-						j1 = r_p_client.indexOf("H");
-						//String data = r_p_client.substring((j + 1), (j + 4));
-						//m2.insert("\n" + data + " BPM", 0);
-					} else if (r_p_client.contains("T")) {
-						j1 = r_p_client.indexOf("T");
-						//String data = r_p_client.substring((j + 1), (j + 3));
-						//m1.insert("\n" + data + "%", 0);
-					} else if (r_p_client.contains("L")) {
-						j1 = r_p_client.indexOf("L");
-						//String data = r_p_client.substring((j), (j + 8));
-						//m3.insert("\n" + data, 0);
-					} else if (r_p_client.contains("X")) {
-						j1 = r_p_client.indexOf("X");
-						//String data = r_p_client.substring((j + 1), (j + 3));
-						//m4.insert("\n" + data + "%", 0);
-					}
-				String latestPNumber = "";
-					if (j1 == 0) {
-						int index1 = r_p_client.indexOf("DR");
-     						latestPNumber = r_p_client.substring((i1 + 1), index1).trim();
-					} else {
-						latestPNumber = r_p_client.substring((i1 + 1), j1).trim();
-					}
-				System.out.println(latestPNumber + " " + checkPacket);
-				if ( Integer.parseInt(latestPNumber) > checkPacket)
-				{
 				if (false) {
 					msg = "0";
 				} else {
@@ -159,20 +124,13 @@ public class UDP_Server extends JFrame {
 
 					String packetNum = "";
 					if (j == 0) {
-						int index = r_p_client.indexOf("DR");
-     						packetNum = r_p_client.substring((i + 1), index).trim();
+						packetNum = r_p_client.substring((i + 1));
 					} else {
-						packetNum = r_p_client.substring((i + 1), j).trim();
+						packetNum = r_p_client.substring((i + 1), j);
 					}
 					showMsg("Packet Number: " + packetNum);
-					checkPacket = Integer.parseInt(packetNum);
-					packetNumber = Integer.parseInt(packetNum);
-
 				}
 				sendPacket(packet);
-				
-				}
-				
 			} catch (IOException ex) {
 				showMsg(ex.getMessage());
 			}
@@ -181,17 +139,13 @@ public class UDP_Server extends JFrame {
 
 	public void sendPacket(DatagramPacket packetReceived) {
 		try {
-			packetNumber++;
-			msg = "P" + packetNumber + "DR1SR4PN4";
 			System.out.println("Message: " + msg);
 			byte buff[] = msg.getBytes();
-			DatagramPacket packet = new DatagramPacket(buff, buff.length, packetReceived.getAddress(), packetReceived.getPort());
+			DatagramPacket packet = new DatagramPacket(buff, buff.length, packetReceived.getAddress(), 10164);
 			socket.send(packet);
-
 		} catch (IOException ex) {
 			System.out.println("Error Sending Packet!");
-	
-	}
+		}
 	}
 
 	// printing message to hub

@@ -11,6 +11,7 @@ import java.util.Scanner;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import java.lang.*;
 
 public class UDP_Client extends JFrame {
 	private static int bufferSize = 100;
@@ -84,9 +85,9 @@ public class UDP_Client extends JFrame {
 		ip3 = s.nextInt();
 		ip4 = s.nextInt();
 		s.nextLine();
-		System.out.println("Enter Gremlin Function Value (0-100) : ");
+		System.out.println("Enter Gremlin Function Value (Ethernet) (0-100) : ");
 		g = s.nextInt();
-		System.out.println("Enter Gremlin Function Value (0-100) : ");
+		System.out.println("Enter Gremlin Function Value (Manet) (0-100) : ");
 		g2 = s.nextInt();
 		userInput.start();
 		
@@ -135,12 +136,18 @@ public class UDP_Client extends JFrame {
 			}
 			if (newData) {
 				// saving old message in case we need to retransmit
+				msg = msg.trim() + "DR12"  + "SR1" + "PN1";
 				old_msg = msg;
-				m1.insert("\n\nSending message packet: " + msg, 0);
 				// sending packet
-				client.sendPacket();
+				if (g <= g2) {
+					client.sendPacketEthernet();
+				}
+				else {
+					client.sendPacket();
+				}
 				// preparing to recieve ACK
 				r = client.readyToReceivPacket();
+				c++;
 				c++;
 			}
 		}
@@ -149,13 +156,19 @@ public class UDP_Client extends JFrame {
 	// function to send the packet
 	public void sendPacket() throws InterruptedException {
 		// UDP_Client rpacket = new UDP_Client();
+		m1.insert("\n\nSending message packet: " + msg + " via MANET", 0);
 		try {
 			byte buff[] = msg.getBytes();
-			byte[] ipAddr = new byte[] { (byte) ip1, (byte) ip2, (byte) ip3, (byte) ip4 };
-			InetAddress addressT = InetAddress.getByAddress(ipAddr);
-			addressT = InetAddress.getLocalHost();
+			//byte[] ipAddr = new byte[] { (byte) ip1, (byte) ip2, (byte) ip3, (byte) ip4 };
+			//InetAddress addressT = InetAddress.getByAddress(ipAddr);
+			
+			//HARD CODE to machine name of 2nd node
+			InetAddress addressT = InetAddress.getByName("tux201.eng.auburn.edu");
+			
+			
+			
 			// gremlin function to determin if the packet is dropped
-			boolean gremlin = gremlinFunctionEthernet();
+			boolean gremlin = gremlinFunction();
 			if (gremlin == false) {
 				m1.insert("\nPacket Number " + c + " Dropped!", 0);
 			}
@@ -169,6 +182,42 @@ public class UDP_Client extends JFrame {
 		}
 	}
 
+	public void sendPacketEthernet() {
+		// UDP_Client rpacket = new UDP_Client();
+		m1.insert("\n\nSending message packet: " + msg + " via Ethernet", 0);
+		try {
+			byte buff[] = msg.getBytes();
+			byte[] ipAddr = new byte[] { (byte) ip1, (byte) ip2, (byte) ip3, (byte) ip4 };
+			InetAddress addressT = InetAddress.getByAddress(ipAddr);
+			//addressT = InetAddress.getByName("tux201.eng.auburn.edu");
+			// gremlin function to determine if the packet is dropped
+			boolean gremlin = gremlinFunctionEthernet();
+			if (gremlin == false) {
+				m1.insert("\nPacket Number " + c + " Dropped!", 0);
+			}
+			// if gremlin doesnt drop, then send it to the server
+			else {
+				DatagramPacket packetSend = new DatagramPacket(buff, buff.length, addressT, 10169);
+				socket.send(packetSend);
+			}
+		} catch (IOException ex) {
+			m1.insert("\n" + ex.getMessage(), 0);
+		}
+		
+	}
+	
+	public boolean gremlinFunction() {
+		Random randSend = new Random();
+		int gremlin = randSend.nextInt(100) + 1;
+		if (gremlin < g2) {
+			return false;
+		}
+		// if gremlin doesnt drop, then send it to the server
+		else {
+			return true;
+		}
+
+	}	
 	public boolean gremlinFunctionEthernet() {
 		Random randSend = new Random();
 		int gremlin = randSend.nextInt(100) + 1;
@@ -195,6 +244,10 @@ public class UDP_Client extends JFrame {
 												// lost
 					socket.receive(packet);
 					String r_p_server = new String(packet.getData());
+					 int i1=r_p_server.indexOf("P");
+					// int index = r_p_server.indexOf("DR");
+				      //   c = Integer.parseInt(r_p_server.substring(i1 + 1, index).trim());
+				        // System.out.println("Packet Number: " + c );
 					return r_p_server;
 				} catch (IOException ex) {
 					m1.insert("\n" + ex.getMessage(), 0);
@@ -202,7 +255,14 @@ public class UDP_Client extends JFrame {
 			} else {// if a packet has been dropped, then here we resend it
 				UDP_Client client1 = new UDP_Client();
 				m1.insert("\nResend!", 0);
-				client1.sendPacket();
+				
+				if (g < g2) {
+					client1.sendPacketEthernet();
+				}
+				else {
+					client1.sendPacket();
+				}
+				//client1.sendPacket();
 				counter = 0;
 			}
 		}

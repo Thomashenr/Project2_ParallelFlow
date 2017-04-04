@@ -29,7 +29,7 @@ class Node extends JFrame {
    private String location;
    public Node allNodes[];
    private File file;
-   private int distances[];
+   public int distances[];
    private Node nodesConnected[];
 
 
@@ -161,6 +161,7 @@ class Node extends JFrame {
       }
       //if gremlin doesnt drop, then send it to the server
       else {
+	 System.out.println("Not dropped");
          return false;
       }
       
@@ -280,7 +281,9 @@ public class UDP_MANET extends Node {
                   {
                      break;
                   }
-               
+                 if (node.allNodes[noden-1].distances[an-1]<100)
+		{
+		  //boolean result = node.gremlinFunctionManet(node.allNodes[noden-1].distances[an-1]);
                   if(Integer.parseInt(previous_node)!=an && Integer.parseInt(source_addr)!=noden && Integer.parseInt(source_addr)!=an) 
                   {
                      int an_port = Integer.parseInt(node.allNodes[an-1].portNumber);
@@ -295,6 +298,7 @@ public class UDP_MANET extends Node {
                      DatagramPacket packetSend = new DatagramPacket(buff, buff.length, addressT, an_port);
                      socket.send(packetSend);
                   }
+		}
                }
             }
          }

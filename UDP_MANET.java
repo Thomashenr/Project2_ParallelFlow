@@ -161,7 +161,6 @@ class Node extends JFrame {
       }
       //if gremlin doesnt drop, then send it to the server
       else {
-	 System.out.println("Not dropped");
          return false;
       }
       
@@ -183,6 +182,8 @@ public class UDP_MANET extends Node {
    public static Node node = new Node("");
    public static String fileName;
    public static String[][] cache_table=new String[10][10];
+   public static int z1=0;
+   public static int new_z1=0;
 
 
    public static void main(String[] args) throws InterruptedException, IOException {
@@ -221,9 +222,9 @@ public class UDP_MANET extends Node {
             socket.receive(packet);
             String r_p_server = new String(packet.getData());
             System.out.println("Data: " + r_p_server);
-            String source_addr=r_p_server.substring(r_p_server.indexOf("SR")+2,r_p_server.indexOf("SR")+3).trim();
+            String source_addr=r_p_server.substring(r_p_server.indexOf("SR")+2,r_p_server.indexOf("PN")).trim();
 	    System.out.println("Source: " + source_addr);
-            String dest_addr=r_p_server.substring(r_p_server.indexOf("DR")+2,r_p_server.indexOf("DR")+4).trim();
+            String dest_addr=r_p_server.substring(r_p_server.indexOf("DR")+2,r_p_server.indexOf("SR")).trim();
          	
             int i1=r_p_server.indexOf("P");
             int j1 = 0;
@@ -263,9 +264,27 @@ public class UDP_MANET extends Node {
          
             int test = Integer.parseInt(packetNum);
             int test2 = Integer.parseInt(cache_table[0][1]);
-            if(Integer.parseInt(packetNum) > Integer.parseInt(cache_table[0][1]))
+           if(r_p_server.contains("Z"))
+           {
+			    int z2 = r_p_server.indexOf("Z");
+				new_z1=Integer.parseInt(r_p_server.substring(0,z2));
+		   }
+		   else
+		   {
+			   z1=0;
+			   new_z1=0;
+		   }
+           
+            if(Integer.parseInt(packetNum) > Integer.parseInt(cache_table[0][1]) || (new_z1 > z1 && r_p_server.contains("Z")))
             {
-               cache_table[0][1]=packetNum;
+				z1=new_z1;
+				if(!r_p_server.contains("A"))
+				{
+					cache_table[0][1]=packetNum;
+				}
+				
+				
+               
                System.out.println("-----");
                previous_node = r_p_server.substring(r_p_server.indexOf("PN")+2).trim();
                System.out.println("Previous Node: " + previous_node);
@@ -283,7 +302,7 @@ public class UDP_MANET extends Node {
                   }
                  if (node.allNodes[noden-1].distances[an-1]<100)
 		{
-		  //boolean result = node.gremlinFunctionManet(node.allNodes[noden-1].distances[an-1]);
+			
                   if(Integer.parseInt(previous_node)!=an && Integer.parseInt(source_addr)!=noden && Integer.parseInt(source_addr)!=an) 
                   {
                      int an_port = Integer.parseInt(node.allNodes[an-1].portNumber);
@@ -294,10 +313,19 @@ public class UDP_MANET extends Node {
                   	//System.out.println("buffer length"+buff.length);
                    //  InetAddress addressT = InetAddress.getLocalHost();
                      InetAddress addressT = InetAddress.getByName(node.allNodes[an-1].machine + ".eng.auburn.edu");
-		     System.out.println(node.allNodes[an-1].machine);
+					 System.out.println(node.allNodes[an-1].machine);
                      DatagramPacket packetSend = new DatagramPacket(buff, buff.length, addressT, an_port);
-                     socket.send(packetSend);
-                  }
+                     
+                     boolean result = node.gremlinFunctionManet(node.allNodes[noden-1].distances[an-1]);
+                     if (!result) {
+						 System.out.println("Packet dropped due to weak signal");
+					 }
+					 else {
+						System.out.println("Not dropped");
+						socket.send(packetSend);
+                  	 
+					 }
+                     }
 		}
                }
             }

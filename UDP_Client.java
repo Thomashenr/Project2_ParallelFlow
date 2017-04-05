@@ -22,6 +22,7 @@ public class UDP_Client extends JFrame {
 	public static String r = "1";
 	public static String msg = "";
 	public static String old_msg = "0";
+	public static int counter1=0;
 
 	public static int ip1 = 0;
 	public static int ip2 = 0;
@@ -31,6 +32,9 @@ public class UDP_Client extends JFrame {
 	public static int g2 = 0;
 	public static int gnew = 0;
 	public static int g2new = 0;
+	public static boolean alternator = true;
+	public static int manetCount = 0;
+	public static int ethernetCount = 0;	
 
 	private static DatagramSocket socketHR;
 	private static DatagramSocket socketLoc;
@@ -87,8 +91,10 @@ public class UDP_Client extends JFrame {
 		s.nextLine();
 		System.out.println("Enter Gremlin Function Value (Ethernet) (0-100) : ");
 		g = s.nextInt();
+		gnew = g;
 		System.out.println("Enter Gremlin Function Value (Manet) (0-100) : ");
 		g2 = s.nextInt();
+		g2new = g2;
 		userInput.start();
 		
 		
@@ -104,7 +110,7 @@ public class UDP_Client extends JFrame {
 		while (c != -1) { // have it set to stop never
 			Thread.sleep(40); // pause for readability
 			if (gnew != g || g2new != g2) {
-				System.out.println("Gremlin Values Updated!" + gnew + g2new);
+				System.out.println("Gremlin Values Updated!" + gnew + " and " + g2new);
 				g = gnew;
 				g2 = g2new;
 			}
@@ -139,12 +145,52 @@ public class UDP_Client extends JFrame {
 				msg = msg.trim() + "DR12"  + "SR1" + "PN1";
 				old_msg = msg;
 				// sending packet
-				if (g <= g2) {
+				
+				
+				
+				if (g == 100 && g2 == 100) {
+					m1.insert("\n\nEthernet and MANET down, awaiting connection restoration..", 0);
+				}
+				else if (g == g2) {
+					if (alternator) {
+						client.sendPacketEthernet();
+						alternator = false;
+					}
+					else {
+						client.sendPacket();
+						alternator = true;
+					}
+				}
+				else if (g < g2) {
+					client.sendPacketEthernet();
+					//alternator = false;
+				}
+				else if (g > g2) {
+					client.sendPacket();
+					//alternator = true;
+				}
+				
+				/*
+				if (g < 100 && g2 < 100) {
+					if (alternator) {
+						client.sendPacketEthernet();
+						alternator = !alternator;
+					}
+					else {
+						client.sendPacket();
+						alternator = !alternator;
+					}
+				}
+				else if (g < 100) {
 					client.sendPacketEthernet();
 				}
-				else {
+				else if (g2 < 100) {
 					client.sendPacket();
 				}
+				else {
+					m1.insert("\n\nEthernet and MANET down, awaiting connection restoration..", 0);
+				}
+				*/
 				// preparing to recieve ACK
 				r = client.readyToReceivPacket();
 				c++;
@@ -156,14 +202,15 @@ public class UDP_Client extends JFrame {
 	// function to send the packet
 	public void sendPacket() throws InterruptedException {
 		// UDP_Client rpacket = new UDP_Client();
-		m1.insert("\n\nSending message packet: " + msg + " via MANET", 0);
+		manetCount++;
+		m1.insert("\n\nSending message packet: " + msg + " via MANET (" + manetCount + ")", 0);
 		try {
 			byte buff[] = msg.getBytes();
 			//byte[] ipAddr = new byte[] { (byte) ip1, (byte) ip2, (byte) ip3, (byte) ip4 };
 			//InetAddress addressT = InetAddress.getByAddress(ipAddr);
 			
 			//HARD CODE to machine name of 2nd node
-			InetAddress addressT = InetAddress.getByName("tux201.eng.auburn.edu");
+			InetAddress addressT = InetAddress.getByName("tux203.eng.auburn.edu");
 			
 			
 			
@@ -184,7 +231,8 @@ public class UDP_Client extends JFrame {
 
 	public void sendPacketEthernet() {
 		// UDP_Client rpacket = new UDP_Client();
-		m1.insert("\n\nSending message packet: " + msg + " via Ethernet", 0);
+		ethernetCount++;
+		m1.insert("\n\nSending message packet: " + msg + " via Ethernet (" + ethernetCount + ")", 0);
 		try {
 			byte buff[] = msg.getBytes();
 			byte[] ipAddr = new byte[] { (byte) ip1, (byte) ip2, (byte) ip3, (byte) ip4 };
@@ -220,7 +268,7 @@ public class UDP_Client extends JFrame {
 	}	
 	public boolean gremlinFunctionEthernet() {
 		Random randSend = new Random();
-		int gremlin = randSend.nextInt(100) + 1;
+		int gremlin = randSend.nextInt(100);
 		if (gremlin < g) {
 			return false;
 		}
@@ -234,6 +282,11 @@ public class UDP_Client extends JFrame {
 	public String readyToReceivPacket() throws InterruptedException {
 		int counter = 0;
 		while (true) {
+			if (gnew != g || g2new != g2) {
+				System.out.println("Gremlin Values Updated!" + gnew + " and " + g2new);
+				g = gnew;
+				g2 = g2new;
+			}
 			if (counter == 0) {
 				try {
 					byte buff1[] = new byte[128];
@@ -243,8 +296,9 @@ public class UDP_Client extends JFrame {
 					socket.setSoTimeout(40); // set timeout for if a packet is
 												// lost
 					socket.receive(packet);
+					counter1=0;
 					String r_p_server = new String(packet.getData());
-					 int i1=r_p_server.indexOf("P");
+					// int i1=r_p_server.indexOf("P");
 					// int index = r_p_server.indexOf("DR");
 				      //   c = Integer.parseInt(r_p_server.substring(i1 + 1, index).trim());
 				        // System.out.println("Packet Number: " + c );
@@ -256,12 +310,66 @@ public class UDP_Client extends JFrame {
 				UDP_Client client1 = new UDP_Client();
 				m1.insert("\nResend!", 0);
 				
-				if (g < g2) {
+				
+				
+				// sending packet
+				if(!msg.contains("Z"))
+				{
+					counter1++;
+					msg = counter1+"Z"+ msg;
+				}
+				else
+				{
+					counter1++;
+					int z1 = msg.indexOf("Z");
+					msg=msg.substring(z1+1);
+					msg = counter1+"Z"+ msg;
+				}
+				
+				
+				
+				if (g == 100 && g2 == 100) {
+					m1.insert("\n\nEthernet and MANET down, awaiting connection restoration..", 0);
+				}
+				else if (g == g2) {
+					if (alternator) {
+						client1.sendPacketEthernet();
+						alternator = false;
+					}
+					else {
+						client1.sendPacket();
+						alternator = true;
+					}
+				}
+				else if (g < g2) {
 					client1.sendPacketEthernet();
 				}
-				else {
+				else if (g > g2) {
 					client1.sendPacket();
 				}
+				
+				/*
+				if (g < 100 && g2 < 100) {
+					if (alternator) {
+						client1.sendPacketEthernet();
+						alternator = !alternator;
+					}
+					else {
+						client1.sendPacket();
+						alternator = !alternator;
+					}
+				}
+				else if (g < 100) {
+					client1.sendPacketEthernet();
+				}
+				else if (g2 < 100) {
+					client1.sendPacket();
+				}
+				else {
+					m1.insert("\n\nEthernet and MANET down, awaiting connection restoration..", 0);
+				}
+				*/
+				
 				//client1.sendPacket();
 				counter = 0;
 			}

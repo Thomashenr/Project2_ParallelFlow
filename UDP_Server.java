@@ -134,44 +134,44 @@ public class UDP_Server extends JFrame {
 				System.out.println(latestPNumber + " " + checkPacket);
 				if ( Integer.parseInt(latestPNumber) > checkPacket)
 				{
-				if (false) {
-					msg = "0";
-				} else {
-					int i = r_p_client.indexOf("P");
-					int j = 0;
-					if (r_p_client.contains("H")) {
-						j = r_p_client.indexOf("H");
-						String data = r_p_client.substring((j + 1), (j + 4));
-						m2.insert("\n" + data + " BPM", 0);
-					} else if (r_p_client.contains("T")) {
-						j = r_p_client.indexOf("T");
-						String data = r_p_client.substring((j + 1), (j + 3));
-						m1.insert("\n" + data + "%", 0);
-					} else if (r_p_client.contains("L")) {
-						j = r_p_client.indexOf("L");
-						String data = r_p_client.substring((j), (j + 8));
-						m3.insert("\n" + data, 0);
-					} else if (r_p_client.contains("X")) {
-						j = r_p_client.indexOf("X");
-						String data = r_p_client.substring((j + 1), (j + 3));
-						m4.insert("\n" + data + "%", 0);
-					}
-
-					String packetNum = "";
-					if (j == 0) {
-						int index = r_p_client.indexOf("DR");
-     						packetNum = r_p_client.substring((i + 1), index).trim();
+					if (false) {
+						msg = "0";
 					} else {
-						packetNum = r_p_client.substring((i + 1), j).trim();
-					}
-					showMsg("Packet Number: " + packetNum);
-					checkPacket = Integer.parseInt(packetNum);
-					packetNumber = Integer.parseInt(packetNum);
+						int i = r_p_client.indexOf("P");
+						int j = 0;
+						if (r_p_client.contains("H")) {
+							j = r_p_client.indexOf("H");
+							String data = r_p_client.substring((j + 1), (j + 4));
+							m2.insert("\n" + data + " BPM", 0);
+						} else if (r_p_client.contains("T")) {
+							j = r_p_client.indexOf("T");
+							String data = r_p_client.substring((j + 1), (j + 3));
+							m1.insert("\n" + data + "%", 0);
+						} else if (r_p_client.contains("L")) {
+							j = r_p_client.indexOf("L");
+							String data = r_p_client.substring((j), (j + 8));
+							m3.insert("\n" + data, 0);
+						} else if (r_p_client.contains("X")) {
+							j = r_p_client.indexOf("X");
+							String data = r_p_client.substring((j + 1), (j + 3));
+							m4.insert("\n" + data + "%", 0);
+						}
 
+						String packetNum = "";
+						if (j == 0) {
+							int index = r_p_client.indexOf("DR");
+								packetNum = r_p_client.substring((i + 1), index).trim();
+						} else {
+							packetNum = r_p_client.substring((i + 1), j).trim();
+						}
+						showMsg("Packet Number: " + packetNum);
+						checkPacket = Integer.parseInt(packetNum);
+						packetNumber = Integer.parseInt(packetNum);
+
+					}
+					
 				}
 				sendPacket(packet);
-				
-				}
 				
 			} catch (IOException ex) {
 				showMsg(ex.getMessage());
@@ -182,7 +182,7 @@ public class UDP_Server extends JFrame {
 	public void sendPacket(DatagramPacket packetReceived) {
 		try {
 			packetNumber++;
-			msg = "P" + packetNumber + "DR1SR4PN4";
+			msg = "AP" + packetNumber + "DR1SR4PN4";
 			System.out.println("Message: " + msg);
 			byte buff[] = msg.getBytes();
 			DatagramPacket packet = new DatagramPacket(buff, buff.length, packetReceived.getAddress(), packetReceived.getPort());

@@ -1,4 +1,15 @@
-Node1 tux203 10164 50 120 links 2
-Node2 tux203 10165 80 120 links 1 3
-Node3 tux204 10166 100 130 links 2 4
-Node4 tux204 10169 110 90 links 2 3
+Node1 tux201 10164 10 10 links 2
+Node2 tux201 10167 10 20 links 1 3 4 5
+Node3 tux202 10167 11 25 links 2 6
+Node4 tux202 10167 12 30 links 2 7
+Node5 tux201 10167 13 35 links 2 8
+Node6 tux202 10167 14 12 links 3 9
+Node7 tux201 10167 15 11 links 4 9
+Node8 tux202 10167 16 15 links 5 10
+Node9 tux201 10167 17 18 links 6 7 11
+Node10 tux201 10167 18 12 links 8 12
+Node11 tux202 10167 19 12 links 9 12 14
+Node12 tux202 10167 20 15 links 10 11 13
+Node13 tux202 10167 21 11 links 12 14
+Node14 tux201 10168 22 15 links 11 13 15
+Node15 tux202 10169 23 20 links 14

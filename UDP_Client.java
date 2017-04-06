@@ -142,7 +142,7 @@ public class UDP_Client extends JFrame {
 			}
 			if (newData) {
 				// saving old message in case we need to retransmit
-				msg = msg.trim() + "DR12"  + "SR1" + "PN1";
+				msg = msg.trim() + "DR6"  + "SR1" + "PN1";
 				old_msg = msg;
 				// sending packet
 				

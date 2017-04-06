@@ -182,7 +182,7 @@ public class UDP_Server extends JFrame {
 	public void sendPacket(DatagramPacket packetReceived) {
 		try {
 			packetNumber++;
-			msg = "AP" + packetNumber + "DR1SR4PN4";
+			msg = "AP" + packetNumber + "DR1SR6PN6";
 			System.out.println("Message: " + msg);
 			byte buff[] = msg.getBytes();
 			DatagramPacket packet = new DatagramPacket(buff, buff.length, packetReceived.getAddress(), packetReceived.getPort());

@@ -35,10 +35,10 @@ class Node extends JFrame {
 
    public Node(String nodeIn) { //Constructor for nodes
       name = nodeIn;
-      attachedNodes = new int[12];
-      distances = new int[12];
-      nodesConnected = new Node[12];
-      for (int i = 0; i < 12; i++) {
+      attachedNodes = new int[15];
+      distances = new int[15];
+      nodesConnected = new Node[15];
+      for (int i = 0; i < 15; i++) {
          attachNewNode(0, i);
       }
    }
@@ -64,7 +64,7 @@ class Node extends JFrame {
    }
 
    public void linkNodes(String configFile) {  //Links nodes appropriately
-      allNodes = new Node[12];
+      allNodes = new Node[15];
       String link;
       Node current;
       file = new File(configFile); // Instance of file
@@ -104,7 +104,7 @@ class Node extends JFrame {
             }
             index = currentNode.location.indexOf(" "); // Gets the location and seperates them via x and y
             currentNode.x = Integer.parseInt(currentNode.location.substring(0, index));
-            currentNode.location = currentNode.location.replace(currentNode.location.substring(0, index + 1), "");
+            currentNode.location = currentNode.location.replaceFirst(currentNode.location.substring(0, index + 1), "");
             index = currentNode.location.indexOf(" ");
             currentNode.y = Integer.parseInt(currentNode.location.substring(0, index));
             allNodes[i] = currentNode; 
@@ -125,7 +125,7 @@ class Node extends JFrame {
       catch (IOException e) {
          e.printStackTrace();
       }
-      for (int b = 0; b < 12; b++) { //Calculates the distance between Nodes
+      for (int b = 0; b < 15; b++) { //Calculates the distance between Nodes
          if(allNodes[b] != null) {
             for(int q = 0; q < 4; q++) {
                allNodes[b].distances[q] = ((int)Math.sqrt((Math.pow(Math.abs(allNodes[b].x - allNodes[q].x), 2) + Math.pow(Math.abs(allNodes[b].y - allNodes[q].y), 2))));   
@@ -139,8 +139,8 @@ class Node extends JFrame {
          }
       }
       
-      for(int y = 0; y < 12; y++) {
-         for(int z = 0; z < 12; z++) {
+      for(int y = 0; y < 15; y++) {
+         for(int z = 0; z < 15; z++) {
             if (allNodes[y] != null) {
                if(allNodes[y].nodesConnected[z] != null) {
                   System.out.println(allNodes[y].getNodeName() + " Connected to: " +  allNodes[y].nodesConnected[z].getNodeName() + " Distance: " + allNodes[y].distances[z]);
@@ -291,7 +291,7 @@ public class UDP_MANET extends Node {
                r_p_server = r_p_server.substring(0, r_p_server.indexOf("PN"));
                r_p_server = r_p_server.trim() +"PN"+(noden);
             
-               for(int i=0;i<12;i++)
+               for(int i=0;i<15;i++)
                {
                   int an= node.allNodes[noden-1].getAttachedNode(i);
                
